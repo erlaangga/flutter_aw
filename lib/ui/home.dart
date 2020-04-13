@@ -9,15 +9,23 @@ import 'dart:async';
 
 class Home extends StatefulWidget {
   @override
-  HomeState createState() => HomeState();
+  _HomeState createState() => _HomeState();
 }
 
-class HomeState extends State<Home> {
+class _HomeState extends State<Home> {
+
+  _HomeState(){
+    updateListView();
+  }
+
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = new GlobalKey<RefreshIndicatorState>();
 
   DbHelper dbHelper = DbHelper();
   int count = 0;
   List<Contact> contactList = List<Contact>();
 
+  var contactHelper = Contact();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,6 +38,7 @@ class HomeState extends State<Home> {
         tooltip: 'Tambah Data',
         onPressed: () async {
           await navigateToEntryForm(context, null);
+          updateListView();
         },
       ),
     );
@@ -48,50 +57,55 @@ class HomeState extends State<Home> {
     return result;
   }
 
-  ListView createListView() {
+  RefreshIndicator createListView() {
     TextStyle textStyle = Theme.of(context).textTheme.subhead;
-    updateListView();
-    return ListView.builder(
-      itemCount: count,
-      itemBuilder: (BuildContext context, int index) {
-        return Card(
-          color: Colors.white,
-          elevation: 2.0,
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.green,
-              child: Icon(Icons.people),
-            ),
-            title: Text(this.contactList[index].name, style: textStyle,),
-            subtitle: Text(this.contactList[index].phone),
-            trailing: GestureDetector(
-              child: Icon(Icons.delete),
-              onTap: () {
-                deleteContact(contactList[index]);
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: updateListView,
+      child: ListView.builder(
+        itemCount: count,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: Colors.white,
+            elevation: 2.0,
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.green,
+                child: Icon(Icons.people),
+              ),
+              title: Text(this.contactList[index].name, style: textStyle,),
+              subtitle: Text(this.contactList[index].phone),
+              trailing: GestureDetector(
+                child: Icon(Icons.delete),
+                onTap: () {
+                  deleteContact(contactList[index]);
+                },
+              ),
+              onTap: () async {
+                await navigateToEntryForm(context, this.contactList[index]);
               },
             ),
-            onTap: () async {
-              await navigateToEntryForm(context, this.contactList[index]);
-            },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   //delete contact
   void deleteContact(Contact object) async {
     object.unlink();
+    this.contactList.removeWhere((cont)=>cont.id == object.id);
     updateListView();
   }
+
   //update contact
-  void updateListView() {
-      Future<List> contactListFuture = Contact().search([]);
-      contactListFuture.then((contactList) {
-        for (var contactMap in contactList){
-          this.contactList.add(Contact.fromMap(contactMap));
-        }
+  Future<Null> updateListView() {
+      Future<List> contactListFuture = contactHelper.search([]);
+      return contactListFuture.then((contactList) {
         setState(() {
+          for (var contactMap in contactList){
+            this.contactList.add(Contact.fromMap(contactMap));
+          }
           this.count = contactList.length;
         });
       });

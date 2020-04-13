@@ -7,27 +7,20 @@ class EntryForm extends StatefulWidget {
   EntryForm(this.contact);
 
   @override
-  EntryFormState createState() => EntryFormState(this.contact);
+  _EntryFormState createState() => _EntryFormState(this.contact);
 }
 
 //class controller
-class EntryFormState extends State<EntryForm> {
+class _EntryFormState extends State<EntryForm> {
   Contact contact;
-  final List<Map<String, String>> listOfColumns = [
-    {"Name": "AAAAAA", "Number": "1", "State": "Yes"},
-    {"Name": "BBBBBB", "Number": "2", "State": "no"},
-    {"Name": "CCCCCC", "Number": "3", "State": "Almost"}
-  ];
 
-  EntryFormState(this.contact);
+  _EntryFormState(this.contact);
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   var buttonRounder = RoundedRectangleBorder(
       side: BorderSide(color: Colors.transparent, width: 2),
       borderRadius: BorderRadius.circular(5));
-
-  var infoTable;
 
   @override
   Widget build(BuildContext context) {
@@ -37,24 +30,6 @@ class EntryFormState extends State<EntryForm> {
       phoneController.text = contact.phone;
     }
 
-    infoTable = DataTable(
-      columns: [
-        DataColumn(label: Text('Patch')),
-        DataColumn(label: Text('Version')),
-        DataColumn(label: Text('Ready')),
-      ],
-      rows: listOfColumns // Loops through dataColumnText, each iteration assigning the value to element
-          .map(
-        ((element) => DataRow(
-          cells: <DataCell>[
-            DataCell(Text(element["Name"])),
-            //Extracting from Map element the value
-            DataCell(Text(element["Number"])),
-            DataCell(Text(element["State"])),
-          ],
-        )),
-      ).toList(),
-    );
     return Scaffold(
         appBar: AppBar(
           title: contact == null ? Text('Tambah') : Text('Ubah'),
@@ -140,8 +115,8 @@ class EntryFormState extends State<EntryForm> {
                             contact.phone = phoneController.text;
                             contact.write();
                           }
-                          // kembali ke layar sebelumnya dengan membawa objek contact
-                          Navigator.pop(context, contact);
+                          // kembali ke layar sebelumnya
+                          Navigator.pop(context);
                         },
                       ),
                     ),
@@ -166,9 +141,6 @@ class EntryFormState extends State<EntryForm> {
                   ],
                 ),
               ),
-              Padding(
-                  padding: EdgeInsets.only(top: 20.0, bottom: 2.0),
-                  child: infoTable)
             ],
           ),
         ));

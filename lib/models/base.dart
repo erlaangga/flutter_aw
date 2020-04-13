@@ -19,6 +19,11 @@ abstract class BaseModel {
     this._id = map['id'];
   }
 
+//  factory BaseModel.search(List domain, {String orderBy, int limit, int offset}) {
+//    var mapList = _dbHelper.select(this._table, orderBy: 'name');
+//    return mapList;
+//  }
+
   void assignValue(String key, dynamic value){
     if (value != fields[key]) {
       fields[key] = value;
@@ -48,7 +53,7 @@ abstract class BaseModel {
   }
 
   void write() async {
-    int result = await dbHelper.update(this.table, this.toMap(fieldState: 'changed'));
+    await dbHelper.update(this.table, this.toMap(fieldState: 'changed'));
   }
 
   void unlink() async {
@@ -58,13 +63,12 @@ abstract class BaseModel {
 
   // konversi dari BaseModel ke Map
   Map<String, dynamic> toMap({String fieldState: 'all'}) {
-    Map<String, dynamic> map = Map<String, dynamic>();
+    Map<String, dynamic> map = fields;
     if (id != 0){
       map['id'] = id;
     }
+    fields.forEach((k, v) => map[k] = v);
     return map;
   }
-
-
 
 }

@@ -31,12 +31,4 @@ class Contact extends BaseModel {
     assignValue(key, value);
   }
 
-  @override
-  Map<String, dynamic> toMap({String fieldState: 'all'}) {
-    Map<String, dynamic> map = super.toMap(fieldState: fieldState);
-    if(map['id'] != 0){
-      fields.addAll(map);
-    }
-    return fields;
-  }
 }
