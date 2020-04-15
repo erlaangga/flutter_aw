@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter_aw/helpers/dbhelper.dart';
 
 abstract class BaseModel {
@@ -58,6 +60,11 @@ abstract class BaseModel {
 
   Future<List<Map<String, dynamic>>> search(List domain, {String orderBy: 'id', int limit, int offset}) async {
     var mapList = await dbHelper.select(this.table, orderBy: orderBy);
+//    var url = 'http://192.168.43.230:8069/api/contacts';
+//    var headers = {'Cookie':'session_id=d172c2fcd4364bca6b76c6c6665ca3337d520a46'};
+//    final response = await http.get(url, headers: headers);
+//    print('Response status: ${response.statusCode}');
+//    var mapList = json.decode(response.body);
     return mapList;
   }
 

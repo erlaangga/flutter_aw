@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_aw/ui/entryform.dart';
 import 'package:flutter_aw/models/contact.dart';
 import 'package:flutter_aw/helpers/dbhelper.dart';
-import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   @override
@@ -37,7 +36,6 @@ class _HomeState extends State<Home> {
         tooltip: 'Tambah Data',
         onPressed: () async {
           await navigateToEntryForm(context, null);
-          updateListView();
         },
       ),
     );
@@ -53,6 +51,7 @@ class _HomeState extends State<Home> {
         )
     );
 
+    updateListView();
     return result;
   }
 
@@ -95,12 +94,6 @@ class _HomeState extends State<Home> {
     object.unlink();
     this.contactList.removeWhere((cont)=>cont.id == object.id);
     updateListView();
-//    var url = '';
-//    var response = await http.post(url, body: {'name': 'doodle', 'color': 'blue'});
-//    print('Response status: ${response.statusCode}');
-//    print('Response body: ${response.body}');
-//
-//    print(await http.read('https://example.com/foobar.txt'));
   }
 
   //update contact
