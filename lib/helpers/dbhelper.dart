@@ -1,8 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 
-//mendukung pemrograman asinkron
-import 'dart:async';
-
 //bekerja pada file dan directory
 import 'package:path/path.dart';
 import 'package:flutter_aw/models/contact.dart';

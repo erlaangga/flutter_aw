@@ -3,6 +3,12 @@ import 'package:flutter_aw/helpers/dbhelper.dart';
 abstract class BaseModel {
   static DbHelper _dbHelper = DbHelper();
 
+  static final String baseUrl = 'http://192.168.122.1:8069';
+  String get apiGetLink;
+  String get apiPostLink;
+  String get apiPutLink;
+  String get apiDeleteLink;
+
   get dbHelper => _dbHelper;
 
   int _id = 0;
@@ -10,6 +16,7 @@ abstract class BaseModel {
   String get table;
   List _changedField = List<String>();
   Map<String, dynamic> fields = new Map();
+  int _odooId = 0;
 
   // konstruktor versi 1
   BaseModel();
@@ -37,6 +44,8 @@ abstract class BaseModel {
 
   }
 
+  int get odooId => _odooId;
+
   Future<BaseModel> create() async{
     if (this.id != 0){
       return this;
@@ -47,8 +56,8 @@ abstract class BaseModel {
     return this;
   }
 
-  Future<List<Map<String, dynamic>>> search(List domain, {String orderBy, int limit, int offset}) async {
-    var mapList = await dbHelper.select('contact', orderBy: 'name');
+  Future<List<Map<String, dynamic>>> search(List domain, {String orderBy: 'id', int limit, int offset}) async {
+    var mapList = await dbHelper.select(this.table, orderBy: orderBy);
     return mapList;
   }
 
@@ -67,7 +76,13 @@ abstract class BaseModel {
     if (id != 0){
       map['id'] = id;
     }
-    fields.forEach((k, v) => map[k] = v);
+
+    switch (fieldState){
+      case 'all': {fields.forEach((k, v) => map[k] = v);}
+        break;
+      case 'changed': {_changedField.forEach((k) => map[k] = fields[k]);}
+        break;
+    }
     return map;
   }
 

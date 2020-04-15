@@ -1,7 +1,8 @@
 import 'package:flutter_aw/models/base.dart';
 
 class Contact extends BaseModel {
-  String get table =>  'contact';
+  String get table => 'contact';
+
   Map<String, dynamic> _newFields = {'name': null, 'phone': null};
 
   // konstruktor versi 1
@@ -30,5 +31,28 @@ class Contact extends BaseModel {
     String key = 'phone';
     assignValue(key, value);
   }
+
+  @override
+  // TODO: implement apiDeleteLink
+  String get apiDeleteLink => '${BaseModel.baseUrl}/api/contacts/$id';
+
+  @override
+  // TODO: implement apiGetLink
+  String get apiGetLink {
+    if (odooId == 0) {
+      return '${BaseModel.baseUrl}/api/contacts';
+    }
+    else {
+      return '${BaseModel.baseUrl}/api/contact/$odooId';
+    }
+  }
+
+  @override
+  // TODO: implement apiPostLink
+  String get apiPostLink => null;
+
+  @override
+  // TODO: implement apiPutLink
+  String get apiPutLink => null;
 
 }

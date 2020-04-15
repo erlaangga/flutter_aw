@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-//letak package folder flutter
 import 'package:flutter_aw/ui/entryform.dart';
 import 'package:flutter_aw/models/contact.dart';
 import 'package:flutter_aw/helpers/dbhelper.dart';
-//untuk memanggil fungsi yg terdapat di daftar pustaka sqflite
-import 'dart:async';
-//pendukung program asinkron
+import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   @override
@@ -14,7 +11,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-  _HomeState(){
+  @override
+  void initState() {
+    super.initState();
     updateListView();
   }
 
@@ -22,7 +21,7 @@ class _HomeState extends State<Home> {
 
   DbHelper dbHelper = DbHelper();
   int count = 0;
-  List<Contact> contactList = List<Contact>();
+  List<Contact> contactList;
 
   var contactHelper = Contact();
   
@@ -70,7 +69,7 @@ class _HomeState extends State<Home> {
             elevation: 2.0,
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.white,
                 child: Icon(Icons.people),
               ),
               title: Text(this.contactList[index].name, style: textStyle,),
@@ -96,16 +95,24 @@ class _HomeState extends State<Home> {
     object.unlink();
     this.contactList.removeWhere((cont)=>cont.id == object.id);
     updateListView();
+//    var url = '';
+//    var response = await http.post(url, body: {'name': 'doodle', 'color': 'blue'});
+//    print('Response status: ${response.statusCode}');
+//    print('Response body: ${response.body}');
+//
+//    print(await http.read('https://example.com/foobar.txt'));
   }
 
   //update contact
   Future<Null> updateListView() {
-      Future<List> contactListFuture = contactHelper.search([]);
-      return contactListFuture.then((contactList) {
+      Future<List> contactListFuture = contactHelper.search([], orderBy: 'name');
+      List contactList = List<Contact>();
+      return contactListFuture.then((lst) {
         setState(() {
-          for (var contactMap in contactList){
-            this.contactList.add(Contact.fromMap(contactMap));
+          for (var contactMap in lst){
+            contactList.add(Contact.fromMap(contactMap));
           }
+          this.contactList = contactList;
           this.count = contactList.length;
         });
       });
